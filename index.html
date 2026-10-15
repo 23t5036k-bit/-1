@@ -111,47 +111,25 @@ async function loadImages(){
   });
 
 }
+await fetch(SCRIPT_URL,{
 
-async function submitData(){
+  method:"POST",
 
-  const name =
-    document
-      .getElementById("name")
-      .value
-      .trim();
+  body:JSON.stringify({
 
-  if(!name){
+    name:name,
+    photos:selected
 
-    alert("氏名を入力してください");
-    return;
+  })
 
-  }
+});
 
-  if(selected.length === 0){
+alert(
+  `${selected.length}枚の写真を送信しました。\nご協力ありがとうございました。`
+);
 
-    alert("写真を選択してください");
-    return;
+location.reload();
 
-  }
-
-  await fetch(SCRIPT_URL,{
-
-    method:"POST",
-
-    body:JSON.stringify({
-
-      name:name,
-      photos:selected
-
-    })
-
-  });
-
-  alert("送信完了");
-
-  location.reload();
-
-}
 
 loadImages();
 
