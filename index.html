@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+
+<title>写真選択実験</title>
+
+<style>
+
+body{
+  font-family:sans-serif;
+  margin:20px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:10px;
+}
+
+.photo{
+  border:4px solid transparent;
+  cursor:pointer;
+}
+
+.photo img{
+  width:100%;
+  height:120px;
+  object-fit:cover;
+}
+
+.selected{
+  border:4px solid red;
+}
+
+button{
+  margin-top:20px;
+  padding:10px 20px;
+  font-size:18px;
+}
+
+</style>
+</head>
+<body>
+
+<h2>見覚えのある写真を選択してください</h2>
+
+<p>
+氏名：
+<input id="name">
+</p>
+
+<div id="grid" class="grid"></div>
+
+<button onclick="submitData()">
+送信
+</button>
+
+<script>
+
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbyuBPt4aI8GgHcXvRydQ6EX9oYbF7aBKvCrTwy5p8W82MBZiAhbmLUNFD0Q1x5mkbms/exec";
+
+const selected = [];
+
+async function loadImages(){
+
+  const response =
+    await fetch(SCRIPT_URL);
+
+  const images =
+    await response.json();
+
+  const grid =
+    document.getElementById("grid");
+
+  images.forEach(image=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className = "photo";
+
+    div.innerHTML =
+      `<img src="${image.url}">`;
+
+    div.onclick = ()=>{
+
+      div.classList.toggle(
+        "selected"
+      );
+
+      const index =
+        selected.indexOf(image.id);
+
+      if(index >= 0){
+
+        selected.splice(index,1);
+
+      }else{
+
+        selected.push(image.id);
+
+      }
+
+    };
+
+    grid.appendChild(div);
+
+  });
+
+}
+
+async function submitData(){
+
+  const name =
+    document
+      .getElementById("name")
+      .value
+      .trim();
+
+  if(!name){
+
+    alert("氏名を入力してください");
+    return;
+
+  }
+
+  if(selected.length === 0){
+
+    alert("写真を選択してください");
+    return;
+
+  }
+
+  await fetch(SCRIPT_URL,{
+
+    method:"POST",
+
+    body:JSON.stringify({
+
+      name:name,
+      photos:selected
+
+    })
+
+  });
+
+  alert("送信完了");
+
+  location.reload();
+
+}
+
+loadImages();
+
+</script>
+
+</body>
+</html>
