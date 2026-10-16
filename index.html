@@ -61,7 +61,6 @@ button{
 
 const SCRIPT_URL =
 "https://script.google.com/macros/s/AKfycbyuBPt4aI8GgHcXvRydQ6EX9oYbF7aBKvCrTwy5p8W82MBZiAhbmLUNFD0Q1x5mkbms/exec";
-
 const selected = [];
 
 async function loadImages(){
@@ -87,9 +86,7 @@ async function loadImages(){
 
     div.onclick = ()=>{
 
-      div.classList.toggle(
-        "selected"
-      );
+      div.classList.toggle("selected");
 
       const index =
         selected.indexOf(image.id);
@@ -111,25 +108,39 @@ async function loadImages(){
   });
 
 }
-await fetch(SCRIPT_URL,{
 
-  method:"POST",
+async function submitData(){
 
-  body:JSON.stringify({
+  const name =
+    document
+      .getElementById("name")
+      .value
+      .trim();
 
-    name:name,
-    photos:selected
+  if(!name){
+    alert("氏名を入力してください");
+    return;
+  }
 
-  })
+  if(selected.length === 0){
+    alert("写真を選択してください");
+    return;
+  }
 
-});
+  await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      name:name,
+      photos:selected
+    })
+  });
 
-alert(
-  `${selected.length}枚の写真を送信しました。\nご協力ありがとうございました。`
-);
+  alert(
+    selected.length +
+    "枚の写真を送信しました。\nご協力ありがとうございました。"
+  );
 
-location.reload();
-
+}
 
 loadImages();
 
